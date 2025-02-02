@@ -8,12 +8,13 @@ import { useNavigate, Link } from "react-router-dom";
 
 const Register = () => {
   const [err, setErr] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // Controls loading state
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    setLoading(true);
+    setLoading(true); // Turn on loading indicator
     e.preventDefault();
+
     const displayName = e.target[0].value;
     const email = e.target[1].value;
     const password = e.target[2].value;
@@ -55,7 +56,8 @@ const Register = () => {
     } catch (err) {
       console.error("Error during registration:", err);
       setErr(err.message); // Set specific error message
-      setLoading(false);
+    } finally {
+      setLoading(false); // Turn off loading indicator after registration is complete
     }
   };
 
@@ -70,11 +72,11 @@ const Register = () => {
           <input required type="password" placeholder="password" />
           <input required style={{ display: "none" }} type="file" id="file" />
           <label htmlFor="file">
-            <img src={Add} alt="" />
+            <img src={Add} alt="Add Avatar" />
             <span>Add an avatar</span>
           </label>
           <button disabled={loading}>Sign up</button>
-          {loading && <p>Loading....</p>} {/* Display a generic loading message */}
+          {loading && <p>Loading...</p>} {/* Display a generic loading message */}
           {err && <span>{err}</span>} {/* Display specific error message */}
         </form>
         <p>
