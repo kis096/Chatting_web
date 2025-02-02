@@ -7,7 +7,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { useNavigate, Link } from "react-router-dom";
 
 const Register = () => {
-  const [err, setErr] = useState(false);
+  const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -20,41 +20,41 @@ const Register = () => {
     const file = e.target[3].files[0];
 
     try {
-      //Create user
+      // Create user with Firebase Auth
       const res = await createUserWithEmailAndPassword(auth, email, password);
 
-      //Create a unique image name
+      // Create a unique image name for the file upload
       const date = new Date().getTime();
       const storageRef = ref(storage, `${displayName + date}`);
 
-      await uploadBytesResumable(storageRef, file).then(() => {
-        getDownloadURL(storageRef).then(async (downloadURL) => {
-          try {
-            //Update profile
-            await updateProfile(res.user, {
-              displayName,
-              photoURL: downloadURL,
-            });
-            //create user on firestore
-            await setDoc(doc(db, "users", res.user.uid), {
-              uid: res.user.uid,
-              displayName,
-              email,
-              photoURL: downloadURL,
-            });
+      // Upload image to Firebase Storage
+      await uploadBytesResumable(storageRef, file);
 
-            //create empty user chats on firestore
-            await setDoc(doc(db, "userChats", res.user.uid), {});
-            navigate("/");
-          } catch (err) {
-            console.log(err);
-            setErr(true);
-            setLoading(false);
-          }
-        });
+      // Get the download URL of the uploaded image
+      const downloadURL = await getDownloadURL(storageRef);
+
+      // Update profile with display name and photo URL
+      await updateProfile(res.user, {
+        displayName,
+        photoURL: downloadURL,
       });
+
+      // Create user document in Firestore
+      await setDoc(doc(db, "users", res.user.uid), {
+        uid: res.user.uid,
+        displayName,
+        email,
+        photoURL: downloadURL,
+      });
+
+      // Create empty user chats document in Firestore
+      await setDoc(doc(db, "userChats", res.user.uid), {});
+
+      // Redirect to home page after successful registration
+      navigate("/");
     } catch (err) {
-      setErr(true);
+      console.error("Error during registration:", err);
+      setErr(err.message); // Set specific error message
       setLoading(false);
     }
   };
@@ -74,8 +74,8 @@ const Register = () => {
             <span>Add an avatar</span>
           </label>
           <button disabled={loading}>Sign up</button>
-          {loading && "Uploading and compressing the image please wait..."}
-          {err && <span>Something went wrong</span>}
+          {loading && <p>Loading...</p>} {/* Display a generic loading message */}
+          {err && <span>{err}</span>} {/* Display specific error message */}
         </form>
         <p>
           You do have an account? <Link to="/login">Login</Link>
@@ -86,4 +86,3 @@ const Register = () => {
 };
 
 export default Register;
-
