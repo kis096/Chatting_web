@@ -1,7 +1,4 @@
 import React, { useContext } from "react";
-// import Cam from "../img/cam.png";
-// import Add from "../img/add.png";
-
 import Messages from "./Messages";
 import Input from "./Input";
 import { ChatContext } from "../context/ChatContext";
@@ -9,18 +6,18 @@ import { ChatContext } from "../context/ChatContext";
 const Chat = () => {
   const { data } = useContext(ChatContext);
 
+  console.log("📌 Chat data:", data); // Debugging log
+
   return (
     <div className="chat">
       <div className="chatInfo">
-        <span>{data.user?.displayName}</span>
+        <span>{data?.user?.displayName || "No User Selected"}</span>
         <div className="chatIcons">
-
-          {/* <img src={Add} alt="" /> */}
-          {/* <img src={More} alt="" /> */}
+          {/* Icons can be added here */}
         </div>
       </div>
       <Messages />
-      <Input/>
+      <Input />
     </div>
   );
 };
