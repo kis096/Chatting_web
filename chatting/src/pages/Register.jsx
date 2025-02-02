@@ -74,7 +74,7 @@ const Register = () => {
             <span>Add an avatar</span>
           </label>
           <button disabled={loading}>Sign up</button>
-          {loading && <p>Loading...</p>} {/* Display a generic loading message */}
+          {loading && <p>Loading....</p>} {/* Display a generic loading message */}
           {err && <span>{err}</span>} {/* Display specific error message */}
         </form>
         <p>
